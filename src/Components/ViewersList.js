@@ -1,14 +1,23 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { View } from 'react-native';
 import { Content, List, ListItem, Text } from 'native-base';
 import CustomHeader from './CustomHeader';
+import Loading from './Loading';
+import { fetchViewers } from '../actions';
+import { getViewers, isLoadingViewers } from '../selectors';
 
 class ViewersList extends Component {
-  constructor(props) {
-    super(props);
+  componentDidMount() {
+    const { fetchViewers } = this.props;
+    fetchViewers();
   }
 
   render() {
+    if (this.props.isLoading) {
+      return <Loading title="Minimal Viewer" />;
+    }
+
     return (
       <View>
         <CustomHeader
@@ -48,11 +57,22 @@ class ViewersList extends Component {
   }
 }
 
-const { object, array } = PropTypes;
+const { array, bool, func, object } = PropTypes;
 
 ViewersList.propTypes = {
+  fetchViewers: func.isRequired,
+  isLoading: bool,
   navigator: object.isRequired,
   viewers: array.isRequired
 };
 
-export default ViewersList;
+const mapStateToProps = state => ({
+  isLoading: isLoadingViewers(state),
+  viewers: getViewers(state)
+});
+
+const mapDispatchToProps = {
+  fetchViewers
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewersList);

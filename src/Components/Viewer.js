@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { View, AsyncStorage } from 'react-native';
 import {
   Text,
@@ -13,6 +14,7 @@ import CustomHeader from './CustomHeader';
 import HeadlineEntry from './HeadlineEntry';
 import StoryEntry from './StoryEntry';
 import AsyncArray from '../Utils/AsyncArray';
+import { getViewer } from '../selectors';
 
 class Viewer extends Component {
   constructor(props) {
@@ -21,13 +23,13 @@ class Viewer extends Component {
     this.state = { isLoading: true, entries: [], currentEntry: undefined };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this._fetchEntries();
   }
 
   render() {
     const {
-      target: { name, url, type, relations, secondary_color },
+      viewer: { name, url, type, relations, secondary_color },
       navigator
     } = this.props;
     const { entries, currentEntry, isLoading } = this.state;
@@ -67,15 +69,15 @@ class Viewer extends Component {
                 currentPosition={currentEntryPosition}
                 secondaryColor={secondary_color}
                 />}
-          onSwipeRight={this._nextStory.bind(this)}
-          onSwipeLeft={this._nextStory.bind(this)}
+          onSwipeRight={this._nextStory}
+          onSwipeLeft={this._nextStory}
         />
       </View>
     );
   }
 
   _fetchEntries() {
-    const { target: { url, relations: { Root } } } = this.props;
+    const { viewer: { url, relations: { Root } } } = this.props;
 
     fetch(url)
       .then(response => response.json())
@@ -105,7 +107,7 @@ class Viewer extends Component {
       .done();
   }
 
-  _nextStory() {
+  _nextStory = () => {
     const { entries, currentEntry } = this.state;
     const currentEntryIndex = entries.indexOf(currentEntry);
     const nextEntryIndex = currentEntryIndex + 1;
@@ -121,7 +123,7 @@ class Viewer extends Component {
         currentEntry: undefined
       });
     }
-  }
+  };
 
   _markAsViewed(entry) {
     let reference = this._generateReferenceFor(entry);
@@ -130,7 +132,7 @@ class Viewer extends Component {
   }
 
   _generateReferenceFor(entry) {
-    const { target: { identifier, relations } } = this.props;
+    const { viewer: { identifier, relations } } = this.props;
 
     return '@MinimalViewer:' + identifier + ':' + entry[relations.ElementKey];
   }
@@ -140,7 +142,11 @@ const { object } = PropTypes;
 
 Viewer.propTypes = {
   navigator: object.isRequired,
-  target: object.isRequired
+  viewer: object.isRequired
 };
 
-export default Viewer;
+const mapStateToProps = (state, { identifier }) => ({
+  viewer: getViewer(state, identifier)
+});
+
+export default connect(mapStateToProps)(Viewer);
