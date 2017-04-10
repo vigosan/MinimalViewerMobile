@@ -1,0 +1,17 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+   "standard-react-native"
+  ],
+  "plugins": [
+    "prettier",
+    "react-native"
+  ],
+  "rules": {
+    "prettier/prettier": ["error", {
+      "printWidth": 80,
+      "trailingComma": "none",
+      "singleQuote": true
+    }]
+  }
+}
