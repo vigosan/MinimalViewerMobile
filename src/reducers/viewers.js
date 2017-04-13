@@ -1,29 +1,36 @@
 import { combineReducers } from 'redux';
 import {
+  FETCH_ENTRIES_SUCCESS,
+  FETCH_VIEWERS_FAILURE,
   FETCH_VIEWERS_REQUEST,
-  FETCH_VIEWERS_SUCCESS,
-  FETCH_VIEWERS_FAILURE
+  FETCH_VIEWERS_SUCCESS
 } from '../constants';
 
-export const byIdentifier = (state = {}, { type, payload }) => {
+const byId = (state = {}, { type, payload, viewer }) => {
   switch (type) {
     case FETCH_VIEWERS_SUCCESS:
       return payload.viewers;
+    case FETCH_ENTRIES_SUCCESS:
+      const viewerInState = state[viewer.identifier];
+      return {
+        ...state,
+        [viewer.identifier]: { ...viewerInState, entryIds: payload.entryIds }
+      };
     default:
       return state;
   }
 };
 
-export const identifiers = (state = [], { type, payload }) => {
+const ids = (state = [], { type, payload }) => {
   switch (type) {
     case FETCH_VIEWERS_SUCCESS:
-      return payload.viewerIdentifiers;
+      return payload.viewerIds;
     default:
       return state;
   }
 };
 
-export const isLoading = (state = false, { type }) => {
+const isLoading = (state = false, { type }) => {
   switch (type) {
     case FETCH_VIEWERS_REQUEST:
       return true;
@@ -36,7 +43,7 @@ export const isLoading = (state = false, { type }) => {
 };
 
 export default combineReducers({
-  byIdentifier,
-  identifiers,
+  byId,
+  ids,
   isLoading
 });
