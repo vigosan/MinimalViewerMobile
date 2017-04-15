@@ -1,19 +1,30 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Linking, TouchableHighlight } from 'react-native';
-import { Text } from 'native-base';
+import {
+  Dimensions,
+  View,
+  StyleSheet,
+  Text,
+  TouchableHighlight
+} from 'react-native';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const styles = StyleSheet.create({
+  card: {
+    position: 'absolute',
+    width: SCREEN_WIDTH,
+    backgroundColor: 'white'
+  }
+});
 
 class StoryEntry extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const {
+      current,
       entry,
-      total,
-      currentPosition,
+      index,
       relations,
-      secondaryColor
+      secondaryColor,
+      total
     } = this.props;
 
     const title = entry[relations.Title];
@@ -21,67 +32,57 @@ class StoryEntry extends Component {
     const link = entry[relations.Link];
 
     return (
-      <TouchableHighlight onPress={() => Linking.openURL(link)}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            backgroundColor: 'white',
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: 50
-          }}
-        >
-          <View style={{ height: 350 }}>
-            <Text style={{ fontSize: 24 }}>{title}</Text>
-            <View
-              style={{
-                width: 200,
-                height: 2,
-                backgroundColor: 'black',
-                marginTop: 25,
-                marginBottom: 25
-              }}
-            />
-            <Text style={{ fontSize: 14 }}>{subtitle}</Text>
-          </View>
+      <View style={styles.card}>
+        <View style={{ height: 350 }}>
+          <Text style={{ fontSize: 24 }}>{title}</Text>
           <View
             style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 220
+              width: 200,
+              height: 2,
+              backgroundColor: 'black',
+              marginTop: 25,
+              marginBottom: 25
             }}
-          >
-            <View
-              style={{
-                width: 250,
-                height: 2,
-                backgroundColor: 'black',
-                marginBottom: 30
-              }}
-            />
-            <Text style={{ fontSize: 32 }}>
-              <Text style={{ color: secondaryColor, fontSize: 32 }}>
-                {currentPosition}
-              </Text>
-              /
-              {total}
-            </Text>
-          </View>
+          />
+          <Text style={{ fontSize: 14 }}>{subtitle}</Text>
         </View>
-      </TouchableHighlight>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 220
+          }}
+        >
+          <View
+            style={{
+              width: 250,
+              height: 2,
+              backgroundColor: 'black',
+              marginBottom: 30
+            }}
+          />
+          <Text style={{ fontSize: 32 }}>
+            <Text style={{ color: current ? secondaryColor : 'black' }}>
+              {index}
+            </Text>
+            /
+            {total}
+          </Text>
+        </View>
+      </View>
     );
   }
 }
 
-const { object, number, string } = PropTypes;
+const { bool, object, number, string } = PropTypes;
 
 StoryEntry.propTypes = {
+  current: bool.isRequired,
   entry: object.isRequired,
-  total: number.isRequired,
-  currentPosition: number.isRequired,
+  index: number.isRequired,
   relations: object.isRequired,
-  secondaryColor: string.isRequired
+  secondaryColor: string.isRequired,
+  total: number.isRequired
 };
 
 export default StoryEntry;
