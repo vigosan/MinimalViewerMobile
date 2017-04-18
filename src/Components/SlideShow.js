@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Linking, View } from 'react-native';
+import { connect } from 'react-redux';
 import DeckSwiper from './DeckSwiper';
 import HeadlineEntry from './HeadlineEntry';
 import StoryEntry from './StoryEntry';
+import { markEntryAsViewed } from '../actions';
 
 class SlideShow extends Component {
   constructor(props) {
@@ -19,12 +21,14 @@ class SlideShow extends Component {
     Linking.openURL(url);
   };
 
-  _handleSwipe = () => {
+  _handleSwipe = entry => {
+    const { markEntryAsViewed } = this.props;
     const total = this.props.entries.length;
     this.setState(prevState => {
       const current = prevState.current + 1;
       return { current: current > total ? 0 : current };
     });
+    markEntryAsViewed(entry);
   };
 
   _renderItem = (item, index) => {
@@ -60,5 +64,8 @@ class SlideShow extends Component {
     );
   }
 }
-
-export default SlideShow;
+const mapStateToProps = state => ({});
+const mapDispatchToProps = {
+  markEntryAsViewed
+};
+export default connect(mapStateToProps, mapDispatchToProps)(SlideShow);

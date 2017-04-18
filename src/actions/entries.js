@@ -2,7 +2,8 @@ import { normalize, schema } from 'normalizr';
 import {
   FETCH_ENTRIES_FAILURE,
   FETCH_ENTRIES_REQUEST,
-  FETCH_ENTRIES_SUCCESS
+  FETCH_ENTRIES_SUCCESS,
+  MARK_ENTRY_AS_VIEWED
 } from '../constants';
 import slugify from '../Utils/slugify';
 
@@ -20,6 +21,11 @@ export const fetchEntriesSuccess = (viewer, data) => ({
   viewer
 });
 
+export const markEntryAsViewed = entry => ({
+  type: MARK_ENTRY_AS_VIEWED,
+  payload: entry
+});
+
 export const fetchEntries = viewer => dispatch => {
   dispatch(fetchEntriesRequest());
 
@@ -35,7 +41,8 @@ export const fetchEntries = viewer => dispatch => {
         processStrategy: (entry, parent, key) => {
           return {
             ...entry,
-            viewer: viewer.identifier
+            viewer: viewer.identifier,
+            id: `@MinimalViewer:${viewer.identifier}:${entry[viewer.relations.ElementKey]}`
           };
         },
         idAttribute: entry =>

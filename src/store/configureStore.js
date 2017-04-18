@@ -1,6 +1,9 @@
-import { applyMiddleware, createStore } from 'redux';
+import { compose, applyMiddleware, createStore } from 'redux';
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
+import { persistStore, autoRehydrate } from 'redux-persist';
+import createFilter from 'redux-persist-transform-filter';
+import { AsyncStorage } from 'react-native';
 import reducers from '../reducers';
 
 const configureStore = initialState => {
@@ -13,8 +16,15 @@ const configureStore = initialState => {
   const store = createStore(
     reducers,
     initialState,
-    applyMiddleware(...middlewares)
+    compose(applyMiddleware(...middlewares), autoRehydrate())
   );
+
+  const persistViewedIds = createFilter('entries', ['viewedIds']);
+
+  persistStore(store, {
+    storage: AsyncStorage,
+    transform: [persistViewedIds]
+  });
 
   return store;
 };

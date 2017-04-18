@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
+import { REHYDRATE } from 'redux-persist/constants';
 import {
   FETCH_ENTRIES_REQUEST,
   FETCH_ENTRIES_SUCCESS,
-  FETCH_ENTRIES_FAILURE
+  FETCH_ENTRIES_FAILURE,
+  MARK_ENTRY_AS_VIEWED
 } from '../constants';
 
 const byId = (state = {}, { type, payload }) => {
@@ -23,6 +25,19 @@ const ids = (state = [], { type, payload }) => {
   }
 };
 
+const viewedIds = (state = [], { type, payload }) => {
+  switch (type) {
+    case REHYDRATE:
+      const { entries = {} } = payload;
+      const { viewedIds = [] } = entries;
+      return viewedIds;
+    case MARK_ENTRY_AS_VIEWED:
+      return [...state, payload.id];
+    default:
+      return state;
+  }
+};
+
 const isLoading = (state = false, { type }) => {
   switch (type) {
     case FETCH_ENTRIES_REQUEST:
@@ -38,5 +53,6 @@ const isLoading = (state = false, { type }) => {
 export default combineReducers({
   byId,
   ids,
-  isLoading
+  isLoading,
+  viewedIds
 });
