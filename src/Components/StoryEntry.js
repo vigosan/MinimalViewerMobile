@@ -6,6 +6,7 @@ import {
   Text,
   TouchableHighlight
 } from 'react-native';
+import EntryInfo from './EntryInfo';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const styles = StyleSheet.create({
@@ -61,13 +62,12 @@ class StoryEntry extends Component {
               marginBottom: 30
             }}
           />
-          <Text style={{ fontSize: 32 }}>
-            <Text style={{ color: current ? secondaryColor : 'black' }}>
-              {index}
-            </Text>
-            /
-            {total}
-          </Text>
+          <EntryInfo
+            current={current}
+            index={index}
+            total={total}
+            secondaryColor={secondaryColor}
+          />
         </View>
       </View>
     );
